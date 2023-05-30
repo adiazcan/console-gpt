@@ -2,7 +2,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.AI;
 using Microsoft.SemanticKernel.AI.ChatCompletion;
-using Microsoft.SemanticKernel.Connectors.OpenAI.ChatCompletion;
+using Microsoft.SemanticKernel.Connectors.AI.OpenAI.ChatCompletion;
 using Microsoft.SemanticKernel.SkillDefinition;
 
 namespace ConsoleGPT.Skills
@@ -16,8 +16,7 @@ namespace ConsoleGPT.Skills
         private readonly OpenAIChatHistory _chatHistory;
         private readonly ChatRequestSettings _chatRequestSettings;
         
-        public ChatSkill(IKernel semanticKernel,
-                         IOptions<OpenAiServiceOptions> openAIOptions)
+        public ChatSkill(IKernel semanticKernel, IOptions<OpenAiServiceOptions> openAIOptions)
         {
             // Set up the chat request settings
             _chatRequestSettings = new ChatRequestSettings()
@@ -30,8 +29,11 @@ namespace ConsoleGPT.Skills
             };
 
             // Configure the semantic kernel
-            semanticKernel.Config.AddOpenAIChatCompletionService("chat", openAIOptions.Value.ChatModel,
-                openAIOptions.Value.Key);
+            semanticKernel.Config.AddAzureChatCompletionService(
+                deploymentName: openAIOptions.Value.DeploymentOrModelId, 
+                endpoint: openAIOptions.Value.Endpoint, 
+                apiKey: openAIOptions.Value.Key, 
+                serviceId: openAIOptions.Value.ServiceId);
 
             // Set up the chat completion and history - the history is used to keep track of the conversation
             // and is part of the prompt sent to ChatGPT to allow a continuous conversation
@@ -83,24 +85,25 @@ namespace ConsoleGPT.Skills
             {
                 // Depending on the role, use a different color
                 var role = message.AuthorRole;
+                var chat = "";
                 switch (role)
                 {
-                    case "system":
-                        role = "System:    ";
+                    case ChatHistory.AuthorRoles.System :
+                        chat = "System:    ";
                         Console.ForegroundColor = ConsoleColor.Blue;
                         break;
-                    case "user":
-                        role = "User:      ";
+                    case ChatHistory.AuthorRoles.User:
+                        chat = "User:      ";
                         Console.ForegroundColor = ConsoleColor.Yellow;
                         break;
-                    case "assistant":
-                        role = "Assistant: ";
+                    case ChatHistory.AuthorRoles.Assistant:
+                        chat = "Assistant: ";
                         Console.ForegroundColor = ConsoleColor.Green;
                         break;
                 }
 
                 // Write the role and the message
-                Console.WriteLine($"{role}{message.Content}");
+                Console.WriteLine($"{chat}{message.Content}");
             }
 
             return Task.CompletedTask;

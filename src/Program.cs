@@ -6,17 +6,26 @@ using ConsoleGPT.Skills;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 
 // Create the host builder
 var builder = Host.CreateDefaultBuilder(args);
+
+using ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
+{
+    builder
+        .SetMinimumLevel(LogLevel.Warning)
+        .AddConsole()
+        .AddDebug();
+});
 
 // Load the configuration file and user secrets
 //
 // These need to be set either directly in the configuration.json file or in the user secrets. Details are in
 // the configuration.json file.
 #pragma warning disable CS8604
-var configurationFilePath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "configuration.json");
+var configurationFilePath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "appsettings.json");
 #pragma warning restore CS8604
 builder.ConfigureAppConfiguration((builder) => builder
     .AddJsonFile(configurationFilePath)
@@ -32,13 +41,18 @@ builder.ConfigureServices((context, services) =>
     services.Configure<OpenAiServiceOptions>(configurationRoot.GetSection("OpenAI"));
 
     // Add Semantic Kernel
-    services.AddSingleton<IKernel>(serviceProvider => Kernel.Builder.Build());
+    var kernel = new KernelBuilder()
+        .WithLogger(loggerFactory.CreateLogger<Kernel>())
+        .Build();
+
+    services.AddSingleton<IKernel>(serviceProvider => kernel);
 
     // Add Native Skills
     
     // Use one of these 2 lines for the use input or output.
     // Console Skill is for console interactions, AzCognitiveServicesSpeechSkill is to interact using a mic and speakers
-    services.AddSingleton<ISpeechSkill, ConsoleSkill>();
+    // services.AddSingleton<ISpeechSkill, ConsoleSkill>();
+    services.AddSingleton<ISpeechSkill, AzCognitiveServicesSpeechSkill>();
     // services.AddSingleton<ISpeechSkill, AzCognitiveServicesSpeechSkill>();
 
     services.AddSingleton<ChatSkill>();
