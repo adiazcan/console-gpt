@@ -25,7 +25,7 @@ namespace ConsoleGPT.Skills
                     line = Console.ReadLine();
                 }
 
-                if (line.ToLower().StartsWith("goodbye"))
+                if (line.ToLower().StartsWith("goodbye") || line.ToLower().StartsWith("adios"))
                     _isGoodbye = true;
 
                 return line;

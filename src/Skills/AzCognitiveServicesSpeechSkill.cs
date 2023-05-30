@@ -49,7 +49,7 @@ namespace ConsoleGPT.Skills
         [SKFunctionName("Listen")]
         public async Task<string> Listen(SKContext context)
         {
-            _logger.LogInformation("Listening...");
+            Console.WriteLine("Listening...");
 
             // Listen till a natural break in the speech is detected
             var result = await _speechRecognizer.RecognizeOnceAsync();
@@ -58,11 +58,11 @@ namespace ConsoleGPT.Skills
             if (result.Reason == ResultReason.RecognizedSpeech)
             {
                 // If we got speech, log it
-                _logger.LogInformation($"Recognized: {result.Text}");
+                Console.WriteLine($"Recognized: {result.Text}");
 
                 // Check if the user said goodbye - the application will use this after processing the speech
                 // to terminate the app
-                if (result.Text.ToLower().StartsWith("goodbye"))
+                if (result.Text.ToLower().StartsWith("goodbye") || result.Text.ToLower().StartsWith("adios"))
                     _isGoodbye = true;
 
                 // Return the speech
@@ -84,7 +84,7 @@ namespace ConsoleGPT.Skills
             // Check if we have a message to speak
             if (!string.IsNullOrWhiteSpace(message))
             {
-                _logger.LogInformation($"Speaking: {message}");
+                Console.WriteLine($"Speaking: {message}");
 
                 // Build some SSML with the text to speak
                 string ssml = GenerateSsml(message, _options.SpeechSynthesisVoiceName);

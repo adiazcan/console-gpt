@@ -67,7 +67,7 @@ namespace ConsoleGPT
         private async Task ExecuteAsync(CancellationToken cancellationToken)
         {
             // Write to the console that the conversation is beginning
-            await _semanticKernel.RunAsync("Hello. Ask me a question or say goodbye to exit.", _speechSkill["Respond"]);
+            await _semanticKernel.RunAsync("Hola. Haz una pregunta o di adios para salir.", _speechSkill["Respond"]);
 
             // Loop till we are cancelled
             while (!cancellationToken.IsCancellationRequested)

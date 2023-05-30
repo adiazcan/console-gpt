@@ -15,9 +15,9 @@ var builder = Host.CreateDefaultBuilder(args);
 using ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
 {
     builder
-        .SetMinimumLevel(LogLevel.Warning)
-        .AddConsole()
-        .AddDebug();
+        .SetMinimumLevel(LogLevel.Critical)
+        .AddConsole();
+        //.AddDebug();
 });
 
 // Load the configuration file and user secrets
@@ -52,8 +52,8 @@ builder.ConfigureServices((context, services) =>
     // Use one of these 2 lines for the use input or output.
     // Console Skill is for console interactions, AzCognitiveServicesSpeechSkill is to interact using a mic and speakers
     // services.AddSingleton<ISpeechSkill, ConsoleSkill>();
-    services.AddSingleton<ISpeechSkill, AzCognitiveServicesSpeechSkill>();
     // services.AddSingleton<ISpeechSkill, AzCognitiveServicesSpeechSkill>();
+    services.AddSingleton<ISpeechSkill, ConsoleSkill>();
 
     services.AddSingleton<ChatSkill>();
 
