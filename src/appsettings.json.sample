@@ -1,0 +1,19 @@
+{
+    "OpenAI": {
+        "Key": "",
+        "Endpoint": "",
+        "ServiceId": "gpt-35-turbo",
+        "DeploymentOrModelId": "gpt-35-turbo",
+        "MaxTokens": 1500,
+        "Temperature": 0.7, 
+        "SystemPrompt": "You are a friendly, intelligent, and curious assistant who is good at conversation. Your name is Orko."
+    },
+    "AzureCognitiveServices": {
+        "Key": "", 
+        "Region": "westeurope", 
+        "SpeechRecognitionLanguage": "es-ES",
+        "SpeechSynthesisVoiceName": "es-ES-DarioNeural", 
+        "EnableSpeechStyle": "true", 
+        "Rate": "+15%" 
+    }
+}
